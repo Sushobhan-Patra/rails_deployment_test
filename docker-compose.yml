@@ -1,0 +1,35 @@
+services:
+  app:
+    build: . 
+    ports:
+      - '3001:3000'
+    command: sh -c "./bin/rails s"
+    depends_on:
+      - db
+    networks:
+      - rails-postgres
+  db:
+    image: postgres:alpine
+    container_name: redminedb
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: redmine
+    ports:
+      - 5440:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - rails-postgres
+    healthcheck:
+      test: [ 'CMD-SHELL', 'pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}' ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres-data:
+
+networks:
+  rails-postgres:

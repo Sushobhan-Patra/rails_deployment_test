@@ -23,6 +23,9 @@ gem "doorkeeper", "~> 5.8.2"
 gem "bcrypt", require: false
 gem "doorkeeper-i18n", "~> 5.2"
 gem "requestjs-rails", "~> 0.0.13"
+gem 'dotenv', '~> 3.1', '>= 3.1.8'
+gem 'dotenv-rails'
+gem 'bundler', '~> 2.5', '>= 2.7.2'
 
 #  Ruby Standard Gems
 gem 'csv', '~> 3.3.2'
@@ -51,49 +54,8 @@ group :minimagick do
   gem 'mini_magick', '~> 5.2.0'
 end
 
-# Include database gems for the adapters found in the database
-# configuration file
-database_file = File.join(File.dirname(__FILE__), "config/database.yml")
-if File.exist?(database_file)
-  database_config = File.read(database_file)
 
-  # Requiring libraries in a Gemfile may cause Bundler warnings or
-  # unexpected behavior, especially if multiple gem versions are available.
-  # So, process database.yml through ERB only if it contains ERB syntax
-  # in the adapter setting. See https://www.redmine.org/issues/41749.
-  if database_config.match?(/^ *adapter: *<%=/)
-    require 'erb'
-    database_config = ERB.new(database_config).result
-  end
-
-  adapters = database_config.scan(/^ *adapter: *(.*)/).flatten.uniq
-  if adapters.any?
-    adapters.each do |adapter|
-      case adapter.strip
-      when /mysql2/
-        gem 'mysql2', '~> 0.5.0'
-        gem "with_advisory_lock"
-      when /trilogy/
-        gem 'trilogy', '~> 2.9.0'
-        gem "with_advisory_lock"
-      when /postgresql/
-        gem 'pg', '~> 1.5.3'
-      when /sqlite3/
-        gem 'sqlite3', '~> 2.5.0'
-      when /sqlserver/
-        gem 'tiny_tds', '~> 2.1.2'
-        gem 'activerecord-sqlserver-adapter', '~> 7.2.0'
-      else
-        warn("Unknown database adapter `#{adapter}` found in config/database.yml, use Gemfile.local to load your own database gems")
-      end
-    end
-  else
-    warn("No adapter found in config/database.yml, please configure it first")
-  end
-else
-  warn("Please configure your config/database.yml first")
-end
-
+gem 'pg', '~> 1.5.3'
 group :development, :test do
   gem 'debug'
 end
