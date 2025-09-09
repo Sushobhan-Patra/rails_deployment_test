@@ -49,3 +49,4 @@ yarn-error.log
 
 /config/master.key
 /.env
+/.env_example
